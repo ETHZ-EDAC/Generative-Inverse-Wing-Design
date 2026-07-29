@@ -1,0 +1,64 @@
+experiment_name: "Wing_cVAE"
+
+data:
+  dataset_path: "data/processed/wings/combined_wings_data_clipped.csv"
+  wing_config_path: "data/processed/wings/config.yaml"
+  batch_size: 4096
+  train_split: 0.85 # --> 425´000 samples
+  val_split: 0.10 # --> 50´000 samples
+  train_subset_fraction: 1.0
+  # test --> 25´000 samples
+
+model:
+  feature_length: 42  # Number of total wing parameters
+  condition_params: ["CL/CD", "mass", "max_von_mises_stress", "CMa"]
+#  Possible condition parameters for cVAE training:
+#                    [
+#                    "L",
+#                    "D",
+#                    "CL",
+#                    "CD",
+#                    "CM",
+#                    "CMa",
+#                    "CLa",
+#                    "max_heave_displacement",
+#                    "max_twist_displacement",
+#                    "max_bending_moment",
+#                    "max_von_mises_stress",
+#                    "mass",
+#                    "CL/CD"
+#                    ]
+  encoder_layers: [256, 128]
+  c_prior_layers: [16,8]
+  c_embedding_layers: [8]
+  c_embedding_dim: 12
+  latent_dim: 14  # Adjust based on your needs
+  decoder_layers: [128, 256]
+  kl_weight: 0.05  # End weight for KL divergence - 0.1 would also be viable
+  af_recon_weight: 15000 # Weight for airfoil reconstruction loss
+  param_recon_weight: 15 # Weight for parameter reconstruction loss
+  geometry_weight: 50000 # Weight for direct parameter reconstruction loss
+  gaussian_integral_degree: 13  # Number of points for Gaussian quadrature along span
+  iou_weight: 25  # Weight for IoU loss
+  c_prior_similarity_weight: 0  # Weight for the conditioning prior similarity loss
+  prior_similarity_temp: 0.5  # Temperature for prior similarity weighting
+  embedded_similarity_weight: 0  # Weight for embedded similarity loss
+  lr: 0.001  # Learning rate
+  lr_scheduler:
+    T_max: 35 # number of epochs to go from lr to lr_min and from start weight to above weights
+    lr_min: 0.0001 # If None, set to lr * 0.1
+    geom_weight_start: 1000 # If None, start at model.geometry_weight * 0.1 --> increaseing
+    iou_weight_start: 2.5 # If None, start at model.iou_weight * 0.1 --> increasing
+
+runs:
+  early_stopping_enabled: true
+  early_stopping_min_delta: 0.001
+  early_stopping_patience: 100
+  trainer:
+      max_epochs: 150
+      accelerator: "auto"
+      devices: "auto"
+      precision: 32
+      gradient_clip_val: 5
+      log_every_n_steps: 50
+      check_val_every_n_epoch: 1 # adjusted check interval of 5 --> about every half epoch

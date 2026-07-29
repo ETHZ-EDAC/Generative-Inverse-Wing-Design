@@ -1,0 +1,40 @@
+experiment_name: "Wing_VAE_Dataset_analysis"
+
+data:
+  dataset_path: "../../data/processed/wings/combined_wings_data.csv"
+  wing_config_path: "../../data/processed/wings/dataset_config.yaml"
+  batch_size: 1024
+  train_split: 0.8
+  val_split: 0.1
+  train_subset_fraction: 1.0
+
+model:
+  feature_length: 42  # Number of frames in sequence
+  encoder_layers: [256, 128]
+  latent_dim: 14  # Adjust based on your needs
+  decoder_layers: [128, 256]
+  kl_weight: 0.05  # End weight for KL divergence
+  af_recon_weight: 15000 # Weight for airfoil reconstruction loss
+  param_recon_weight: 15 # Weight for parameter reconstruction loss
+  geometry_weight: 50000 # Weight for direct parameter reconstruction loss
+  gaussian_integral_degree: 13  # Number of points for Gaussian quadrature along span
+  iou_weight: 25  # Weight for IoU loss
+  lr: 0.001  # Learning rate
+  lr_scheduler:
+    T_max: 50 # number of epochs to go from lr to lr_min and from start weight to above weights
+    lr_min: 0.0001 # If None, set to lr * 0.1
+    geom_weight_start: 1000 # If None, start at model.geometry_weight * 0.1
+    iou_weight_start: 2.5 # If None, start at model.iou_weight * 0.1
+
+runs:
+  early_stopping_enabled: true
+  early_stopping_min_delta: 0.001
+  early_stopping_patience: 150
+  trainer:
+      max_epochs: 150
+      accelerator: "auto"
+      devices: "auto"
+      precision: 32
+      gradient_clip_val: 5
+      log_every_n_steps: 50
+      val_check_interval: 1.0

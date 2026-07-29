@@ -1,0 +1,35 @@
+experiment_name: "Airfoil_VAE_Clustering"
+
+data:
+  dataset_path: "data/processed/airfoil_with_polars.csv"
+  batch_size: 64
+  train_split: 0.7
+  val_split: 0.15
+
+model:
+  input_length: 7  # Number of frames in sequence
+  encoder_layers: [256, 128, 64, 32]
+  latent_dim: 2  # Adjust based on your needs
+  decoder_layers: [32, 64, 128, 256]
+  kl_weight: 0.65  # End weight for KL divergence --> increasing from 0.1*reconstruction_weight
+  kl_similarity_annealing_epochs: 65  # Number of epochs for KL annealing
+  # kl starts at 0.1*kl_weight and increases to kl_weight over these epochs
+  # similarity starts at aero_similarity_weight and decreases to 0.1*aero_similarity_weight over these epochs
+  # if set to 0, no annealing is applied
+  reconstruction_weight: 1 # Weight for reconstruction loss
+  IoU_weight: 0  # Weight for IoU loss
+  aero_similarity_weight: 0.65  # Start weight for aerodynamic similarity loss --> decreaseing to 0.1*aero_similarity_weight
+  lr: 0.001  # Learning rate
+
+runs:
+  early_stopping_enabled: true
+  early_stopping_min_delta: 0.01
+  early_stopping_patience: 50
+  trainer:
+      max_epochs: 500
+      accelerator: "auto"
+      devices: "auto"
+      precision: 32
+      gradient_clip_val: 0.75
+      log_every_n_steps: 5
+      check_val_every_n_epoch: 1 # adjusted check interval of 5 --> about every half epoch

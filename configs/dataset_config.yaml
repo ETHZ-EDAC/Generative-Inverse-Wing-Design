@@ -1,0 +1,62 @@
+fixed_wing_parameters:
+  span: 15.0 # [m]
+  # Distance of Wing tips
+  root_chord: 1.0 # [m]
+  # Chord length at wing root
+  ys_over_half_span: [0.0, 0.38268343, 0.70710678, 0.92387953, 1.0] # List[float], float values between 0 and 1
+  # Spanwise stations (relative to half-span) where airfoils are defined
+  rib_positions: [0.0, 0.02507209, 0.09903113, 0.21816852, 0.3765102,  0.56611626, 0.77747907, 1.0] # List[float], float values between 0 and 1
+  # Relative positions along half-span where ribs are located (between 0 and 1)
+  material_name: "Aluminum 7075"
+  material_elastic_modulus: 71.7e9
+  material_poissons_ratio: 0.33
+  material_density: 2810
+  material_yield_strength: 430e6
+  # Material properties
+  skin_thickness: 0.001 # [m]
+  # Thickness of the wing skin
+  spar_position: 0.33 # relative position along chord [0, 1]
+  spar_web_flange_thickness: 0.01 # [m]
+  # Thickness of the spar web and flanges
+  spar_flange_width: 0.05 # [m]
+  # Width of the spar flanges
+  rib_thickness: 0.005 # [m]
+  # Thickness of the ribs
+  rib_hole_positions: [0.2, 0.4, 0.6]
+  rib_min_border: 0.02
+
+variable_wing_parameters:
+    chord_tip: {"kind": "normal", "params": [0.5, 0.02777778], "bounds": [0.05, 1.0]} # 3*std = 0.5,  [m]
+    # chord length at wing tip
+    chord_ctrl_pos: {"kind": "normal", "params": [0.75, 0.00694444], "bounds": [0.0, 1.0]} #3*std = 0.25, [dimless]
+    # relative position along half-span where chord control point is located (between 0 and 1), y_component is at root_chord
+    chord_weight_ctrl: {"kind": "uniform", "params": [0.0, 5.0], "bounds": [0.0, 5.0]} # uniform between 0 and 5, [dimless]
+    # weight of the chord control point for a rational quadratic Bezier chord function
+    spar_sweep: {"kind": "normal", "params": [0.0, 1.0], "bounds": [-3.0, 3.0]} #3*std = 3, [degrees]
+    # sweep angle of the spar relative to the root chord line
+    twist_root: {"kind": "normal", "params": [5.0, 2.77777778], "bounds": [-2.0, 12.0]} #3*std = 5, [degrees]
+    # twist angle at wing root. Angle of incidence of the root airfoil.
+    twist_tip: {"kind": "normal", "params": [2.0, 2.77777778], "bounds": [-5.0, 9.0]} #3*std = 5, [degrees]
+    # twist angle at wing tip. Angle of incidence of the tip airfoil.
+    twist_mean_pos: {"kind": "normal", "params": [0.65, 0.0025], "bounds": [0.5, 0.8]} #3*std = 0.15, [dimless]
+    # relative position along half-span where twist angle is halfway between root and tip twist (between 0 and 1)
+
+operating_point:
+  mach: 0.2 # Mach number
+  # Cruise Mach number, should be < 0.3 for incompressible assumption to hold
+  velocity: 50.0 # [m/s]
+  # Cruise velocity
+  chordwise_resolution: 5  # [int]
+  # [num of panels along chord]
+  spanwise_resolution: 5  # [int]
+  # [num of panels along span, per corss section]
+
+datarunner_settings:
+  seed: 42
+  num_workers: 16
+  output_folder_path: ${hydra:run.dir}/wings/data/
+  airfoils_csv_path: data/processed/airfoil_with_polars_without_outliers.csv
+  #num_samples: None
+  # If None, generates all possible combinations
+  tip_airfoil_family: 13
+  # if defined, the tip airfoil will always be from this family
