@@ -165,7 +165,7 @@ It writes the generator input to `data/processed/airfoil_with_polars_without_out
 
 ### Published wing-training dataset
 
-The published wing-training CSV and matching configuration are available from the [Aero-Struct-Wing Hugging Face dataset](https://huggingface.co/datasets/jpfenniger/Aero-Struct-Wing).
+The published wing-training CSV and matching configuration are available from the [aeroelastic-wings Hugging Face dataset](https://huggingface.co/datasets/ETHZ-EDAC/aeroelastic-wings).
 
 This is the recommended route for cVAE training because the complete aeroelastic dataset has already been generated.
 
@@ -238,13 +238,13 @@ Hydra accepts reproducible command-line overrides such as `operating_point.veloc
 
 The code is released under the [MIT License](LICENSE).
 
-If you use this software, please cite the software release using the metadata in [`CITATION.cff`](CITATION.cff).
+If you use this software, please cite the software release.
 
 The associated article, *Inverse Aeroelastic Design of Glider Wings*, will be linked here upon acceptance.
 
 ## Project status
 
-This is release `0.1.0` of the aeroelastic cVAE research code.
+This is release `1.0.0` of the aeroelastic cVAE research code.
 
 The source, configurations, notebooks, and data-download workflow are included for reproducible research use.
 
